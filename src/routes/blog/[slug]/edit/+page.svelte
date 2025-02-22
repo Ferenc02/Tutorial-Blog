@@ -75,8 +75,8 @@
 		</button>
 	</div>
 
-	<div class="flex w-full gap-8">
-		<div class="edit-container w-1/2">
+	<div class="flex w-full flex-col gap-8 lg:flex-row">
+		<div class="edit-container w-full lg:w-1/2">
 			<h1 class="text-center text-3xl font-bold">
 				<input
 					type="text"
@@ -84,7 +84,13 @@
 					class="w-full rounded-lg border-2 border-gray-300 p-2 text-center text-3xl font-bold"
 				/>
 			</h1>
-			<span class="flex justify-center text-gray-500 dark:text-gray-300">{blog.date}</span>
+			<span class="flex justify-center text-gray-500 dark:text-gray-300">
+				<input
+					type="text"
+					bind:value={updatedBlog.date}
+					class="w-full rounded-lg border-2 border-gray-300 p-2 text-center text-lg text-gray-500 dark:text-gray-300"
+				/>
+			</span>
 
 			<div class="relative">
 				<input
@@ -95,7 +101,11 @@
 				<span
 					class="absolute top-0 right-0 rounded-bl-lg bg-white p-2 text-black dark:bg-neutral-700 dark:text-white"
 				>
-					{updatedBlog.category}
+					<input
+						type="text"
+						bind:value={updatedBlog.category}
+						class="w-full rounded-lg border-2 border-gray-300 p-2 text-center text-lg text-gray-700 dark:text-gray-300"
+					/>
 				</span>
 				<span class="mt-2 flex justify-center text-gray-500 italic dark:text-gray-300">
 					<input
@@ -112,7 +122,7 @@
 				class="h-48 w-full rounded-lg border-2 border-gray-300 p-2 text-left text-lg text-gray-700 dark:text-gray-300"
 			></textarea>
 		</div>
-		<div class="preview-container flex w-1/2 flex-col gap-4">
+		<div class="preview-container flex w-full flex-col gap-4 lg:w-1/2">
 			<h1 class="text-center text-3xl font-bold">{updatedBlog.title}</h1>
 			<span class="flex justify-center text-gray-500 dark:text-gray-300">{updatedBlog.date}</span>
 			<div class="relative">
