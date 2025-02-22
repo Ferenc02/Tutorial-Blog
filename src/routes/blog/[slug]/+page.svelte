@@ -42,7 +42,7 @@
 			location.pathname = '/blog';
 		}
 
-		blog.content.forEach((content) => {
+		blog.content.forEach((content: any) => {
 			let contentToSanitize = '';
 			if (content.type === 'image') {
 				contentToSanitize = `

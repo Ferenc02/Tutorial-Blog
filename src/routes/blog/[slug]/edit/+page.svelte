@@ -27,11 +27,11 @@
 
 	let blog = blogs.find((blog) => blog.title === page.params.slug)!;
 
-	let updatedBlog = { ...blog };
+	let updatedBlog: any = { ...blog };
 
 	let blogContent: HTMLElement[] = [];
 
-	async function saveBlog() {
+	async function saveBlog(redirect = true) {
 		const res = await fetch('/api/update-blog', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -40,7 +40,7 @@
 
 		const data = await res.json();
 		if (data.success) {
-			location.pathname = `/blog/${updatedBlog.title}`;
+			if (redirect) location.pathname = `/blog/${updatedBlog.title}`;
 		} else {
 			alert('Error saving blog');
 		}
@@ -58,8 +58,6 @@
 	});
 
 	const updateContent = () => {
-		console.log('?');
-
 		for (let i = 0; i < updatedBlog.content.length; i++) {
 			blogContent[i].innerHTML = '';
 			let contentToSanitize = '';
@@ -82,12 +80,31 @@
 			blogContent[i].innerHTML += sanitizedContent;
 		}
 	};
+
+	const removePreviousContent = () => {
+		console.log('?');
+		updatedBlog.content.pop();
+		saveBlog(false);
+		updateContent();
+	};
+
+	const addContent = (type: 'text' | 'image' | 'code') => {
+		if (type === 'text') {
+			updatedBlog.content.push({ type: 'text', text: '' });
+		} else if (type === 'image') {
+			updatedBlog.content.push({ type: 'image', text: '', caption: '' });
+		} else if (type === 'code') {
+			updatedBlog.content.push({ type: 'code', text: '' });
+		}
+		saveBlog(false);
+		updateContent();
+	};
 </script>
 
 <article class="mx-auto my-8 flex w-full flex-col gap-4 px-8">
 	<div class="buttons flex justify-end gap-2">
 		<button
-			onclick={saveBlog}
+			onclick={async () => await saveBlog()}
 			class="flex w-32 cursor-pointer justify-center self-end rounded-full bg-blue-600 px-6 py-3 font-semibold text-white shadow-md transition-colors hover:bg-blue-800"
 		>
 			Save
@@ -115,11 +132,9 @@
 				<input
 					type="text"
 					bind:value={updatedBlog.image}
-					class="h-96 w-full rounded-lg object-cover shadow-md"
+					class="h-16 w-full rounded-lg border-2 border-green-300 object-cover shadow-md"
 				/>
-				<span
-					class="absolute top-0 right-0 rounded-bl-lg bg-white p-2 text-black dark:bg-neutral-700 dark:text-white"
-				>
+				<span class="absolute top-0 right-0 text-black dark:bg-neutral-700 dark:text-white">
 					<input
 						type="text"
 						bind:value={updatedBlog.category}
@@ -130,7 +145,7 @@
 					<input
 						type="text"
 						bind:value={updatedBlog.imageCaption}
-						class="w-full rounded-lg border-2 border-gray-300 p-2 text-center text-lg text-gray-700 dark:text-gray-300"
+						class="w-full rounded-lg border-2 border-green-300 p-2 text-center text-lg text-gray-700 dark:text-gray-300"
 					/>
 				</span>
 			</div>
@@ -149,7 +164,7 @@
 								type="text"
 								bind:value={updatedBlog.content[i].text}
 								oninput={updateContent}
-								class="h-96 w-full rounded-lg object-cover shadow-md"
+								class="h-16 w-full rounded-lg border-2 border-green-300 object-cover shadow-md"
 							/>
 
 							<span class="mt-2 flex justify-center text-gray-500 italic dark:text-gray-300">
@@ -157,13 +172,40 @@
 									type="text"
 									bind:value={updatedBlog.content[i].caption}
 									oninput={updateContent}
-									class="w-full rounded-lg border-2 border-gray-300 p-2 text-center text-lg text-gray-700 dark:text-gray-300"
+									class="w-full rounded-lg border-2 border-green-300 p-2 text-center text-lg text-gray-700 dark:text-gray-300"
 								/>
 							</span>
 						</div>
 					{/if}
 					<hr class="border-gray-300 dark:border-gray-700" />
 				{/each}
+
+				<div class="flex justify-center gap-4">
+					<button
+						class="flex w-32 cursor-pointer justify-center self-end rounded-md bg-yellow-600 px-6 py-3 font-semibold text-white shadow-md transition-colors hover:bg-yellow-800"
+						onclick={() => addContent('text')}
+					>
+						Text
+					</button>
+					<button
+						class="flex w-32 cursor-pointer justify-center self-end rounded-md bg-green-600 px-6 py-3 font-semibold text-white shadow-md transition-colors hover:bg-green-800"
+						onclick={() => addContent('image')}
+					>
+						Image
+					</button>
+					<button
+						class="flex w-32 cursor-pointer justify-center self-end rounded-md bg-blue-600 px-6 py-3 font-semibold text-white shadow-md transition-colors hover:bg-blue-800"
+						onclick={() => addContent('code')}
+					>
+						Code
+					</button>
+					<button
+						class="flex w-32 cursor-pointer justify-center self-end rounded-md bg-red-600 px-6 py-3 font-semibold text-white shadow-md transition-colors hover:bg-red-800"
+						onclick={removePreviousContent}
+					>
+						Delete
+					</button>
+				</div>
 			</div>
 		</div>
 		<div class="preview-container flex w-full flex-col gap-4 lg:w-1/2">

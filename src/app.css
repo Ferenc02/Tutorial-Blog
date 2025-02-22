@@ -32,3 +32,6 @@ main {
 	--text-secondary: #ccc;
 	--text-inverse: #333;
 }
+.code-container {
+	font-family: 'Inter', sans-serif;
+}

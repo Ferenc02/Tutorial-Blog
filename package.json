@@ -37,6 +37,8 @@
 	},
 	"dependencies": {
 		"@tailwindcss/typography": "^0.5.16",
-		"dompurify": "^3.2.4"
+		"dompurify": "^3.2.4",
+		"highlight.js": "^11.11.1",
+		"svelte-highlight": "^7.8.2"
 	}
 }
