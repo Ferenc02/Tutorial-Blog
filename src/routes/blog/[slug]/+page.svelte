@@ -4,6 +4,25 @@
 	import { blogs } from '$lib/blogs.json';
 
 	import { onMount } from 'svelte';
+	import DOMPurify from 'dompurify';
+
+	let allowedTags = [
+		'b',
+		'strong',
+		'i',
+		'em',
+		'br',
+		'p',
+		'ul',
+		'ol',
+		'li',
+		'a',
+		'img',
+		'h1',
+		'h2',
+		'h3'
+	];
+	let allowedAttributes = ['href', 'title', 'src', 'alt', 'class', 'style'];
 
 	let blogsName = blogs.map((blog) => blog.title);
 
@@ -22,10 +41,12 @@
 			location.pathname = '/blog';
 		}
 
-		let newText = blog.content.replace(/\\n/g, '<br>');
+		let sanitizedContent = DOMPurify.sanitize(blog.content, {
+			ALLOWED_TAGS: allowedTags,
+			ALLOWED_ATTR: allowedAttributes
+		});
 
-		// Not the best way to do this since this will make the content vulnerable to XSS attacks
-		content.innerHTML = newText;
+		content.innerHTML = sanitizedContent;
 	});
 </script>
 
