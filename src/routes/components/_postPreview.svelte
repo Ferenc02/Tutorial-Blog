@@ -7,7 +7,7 @@
 		date: string;
 		category: string;
 		image: string;
-		content: string;
+		content: { text: string }[];
 	}
 
 	let data: PostPreview = $props();
@@ -33,9 +33,9 @@
 	</div>
 
 	<p class=" text-left text-lg text-gray-700 dark:text-gray-300">
-		{data.content.length > characterLimit
-			? `${data.content.slice(0, characterLimit)}...`
-			: data.content}
+		{data.content[0].text.length > characterLimit
+			? `${data.content[0].text.slice(0, characterLimit)}...`
+			: data.content[0].text}
 	</p>
 
 	<div class=" flex justify-center">

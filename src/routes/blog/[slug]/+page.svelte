@@ -20,7 +20,8 @@
 		'img',
 		'h1',
 		'h2',
-		'h3'
+		'h3',
+		'div'
 	];
 	let allowedAttributes = ['href', 'title', 'src', 'alt', 'class', 'style'];
 
@@ -34,19 +35,33 @@
 
 	let isAdmin = props.data.isAdmin;
 
-	let content: HTMLElement;
+	let blogContent: HTMLElement;
 
 	onMount(async () => {
 		if (!blogsName.includes(page.params.slug)) {
 			location.pathname = '/blog';
 		}
 
-		let sanitizedContent = DOMPurify.sanitize(blog.content, {
-			ALLOWED_TAGS: allowedTags,
-			ALLOWED_ATTR: allowedAttributes
-		});
+		blog.content.forEach((content) => {
+			let contentToSanitize = '';
+			if (content.type === 'image') {
+				contentToSanitize = `
+				<div class="relative">
+				<img src="${content.text}" alt="${content.caption}" class="w-full rounded-lg object-cover shadow-md" />
+				<p class="mt-2 flex justify-center text-gray-500 italic dark:text-gray-300 text-sm">${content.caption}</p>
+				</div>
+				`;
+			} else if (content.type === 'text') {
+				contentToSanitize = `<p>${content.text}</p>`;
+			}
 
-		content.innerHTML = sanitizedContent;
+			let sanitizedContent = DOMPurify.sanitize(contentToSanitize, {
+				ALLOWED_TAGS: allowedTags,
+				ALLOWED_ATTR: allowedAttributes
+			});
+
+			blogContent.innerHTML += sanitizedContent;
+		});
 	});
 
 	let deleteBlog = async () => {
@@ -97,12 +112,13 @@
 			class="absolute top-0 right-0 rounded-bl-lg bg-white p-2 text-black dark:bg-neutral-700 dark:text-white"
 			>{blog.category}</span
 		>
-		<span class="mt-2 flex justify-center text-gray-500 italic dark:text-gray-300"
-			>{blog.imageCaption}</span
-		>
+		<p class="mt-2 flex justify-center text-sm text-gray-500 italic dark:text-gray-300">
+			{blog.imageCaption}
+		</p>
 	</div>
 
-	<p class="text-left text-lg text-gray-700 dark:text-gray-300" bind:this={content}>
-		{blog.content}
-	</p>
+	<div
+		class="flex flex-col gap-4 text-left text-lg text-gray-700 dark:text-gray-300"
+		bind:this={blogContent}
+	></div>
 </article>

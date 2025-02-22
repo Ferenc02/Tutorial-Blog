@@ -27,8 +27,12 @@ export async function POST({ request, cookies }) {
 		category: 'JavaScript',
 		image: 'https://picsum.photos/id/366/600/300',
 		imageCaption: 'Image Caption 1',
-		content:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. <b>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</b>\n\n\n'
+		content: [
+			{
+				type: 'text',
+				text: 'This is a new blog post.'
+			}
+		]
 	};
 
 	blogs.push(newBlog);

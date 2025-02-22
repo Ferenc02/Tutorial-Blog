@@ -18,7 +18,8 @@
 		'img',
 		'h1',
 		'h2',
-		'h3'
+		'h3',
+		'div'
 	];
 	let allowedAttributes = ['href', 'title', 'src', 'alt', 'class', 'style'];
 
@@ -28,7 +29,8 @@
 
 	let updatedBlog = { ...blog };
 
-	let content: HTMLElement;
+	let blogContent: HTMLElement[] = [];
+
 	async function saveBlog() {
 		const res = await fetch('/api/update-blog', {
 			method: 'POST',
@@ -56,12 +58,29 @@
 	});
 
 	const updateContent = () => {
-		let sanitizedContent = DOMPurify.sanitize(updatedBlog.content, {
-			ALLOWED_TAGS: allowedTags,
-			ALLOWED_ATTR: allowedAttributes
-		});
+		console.log('?');
 
-		content.innerHTML = sanitizedContent;
+		for (let i = 0; i < updatedBlog.content.length; i++) {
+			blogContent[i].innerHTML = '';
+			let contentToSanitize = '';
+			if (updatedBlog.content[i].type === 'image') {
+				contentToSanitize = `
+				<div class="relative">
+				<img src="${updatedBlog.content[i].text}" alt="${updatedBlog.content[i].caption}" class="w-full rounded-lg object-cover shadow-md" />
+				<p class="mt-2 flex justify-center text-gray-500 italic dark:text-gray-300 text-sm">${updatedBlog.content[i].caption}</p>
+				</div>
+				`;
+			} else if (updatedBlog.content[i].type === 'text') {
+				contentToSanitize = `<p>${updatedBlog.content[i].text}</p>`;
+			}
+
+			let sanitizedContent = DOMPurify.sanitize(contentToSanitize, {
+				ALLOWED_TAGS: allowedTags,
+				ALLOWED_ATTR: allowedAttributes
+			});
+
+			blogContent[i].innerHTML += sanitizedContent;
+		}
 	};
 </script>
 
@@ -76,7 +95,7 @@
 	</div>
 
 	<div class="flex w-full flex-col gap-8 lg:flex-row">
-		<div class="edit-container w-full lg:w-1/2">
+		<div class="edit-container flex w-full flex-col gap-4 lg:w-1/2">
 			<span class="text-center text-3xl font-bold">
 				<input
 					type="text"
@@ -116,11 +135,36 @@
 				</span>
 			</div>
 
-			<textarea
-				bind:value={updatedBlog.content}
-				oninput={updateContent}
-				class="h-48 w-full rounded-lg border-2 border-gray-300 p-2 text-left text-lg text-gray-700 dark:text-gray-300"
-			></textarea>
+			<div class="content-container flex flex-col gap-4">
+				{#each updatedBlog.content as content, i}
+					{#if content.type === 'text'}
+						<textarea
+							bind:value={updatedBlog.content[i].text}
+							oninput={updateContent}
+							class="h-48 w-full rounded-lg border-2 border-gray-300 p-2 text-lg text-gray-700 dark:text-gray-300"
+						></textarea>
+					{:else if content.type === 'image'}
+						<div class="relative">
+							<input
+								type="text"
+								bind:value={updatedBlog.content[i].text}
+								oninput={updateContent}
+								class="h-96 w-full rounded-lg object-cover shadow-md"
+							/>
+
+							<span class="mt-2 flex justify-center text-gray-500 italic dark:text-gray-300">
+								<input
+									type="text"
+									bind:value={updatedBlog.content[i].caption}
+									oninput={updateContent}
+									class="w-full rounded-lg border-2 border-gray-300 p-2 text-center text-lg text-gray-700 dark:text-gray-300"
+								/>
+							</span>
+						</div>
+					{/if}
+					<hr class="border-gray-300 dark:border-gray-700" />
+				{/each}
+			</div>
 		</div>
 		<div class="preview-container flex w-full flex-col gap-4 lg:w-1/2">
 			<h1 class="text-center text-3xl font-bold">{updatedBlog.title}</h1>
@@ -140,9 +184,29 @@
 				>
 			</div>
 
-			<p class="text-left text-lg text-gray-700 dark:text-gray-300" bind:this={content}>
-				{updatedBlog.content}
-			</p>
+			{#each updatedBlog.content as content, i}
+				<div class="flex flex-col gap-4">
+					{#if content.type === 'text'}
+						<p
+							class="text-left text-lg text-gray-700 dark:text-gray-300"
+							bind:this={blogContent[i]}
+						>
+							{content.text}
+						</p>
+					{:else if content.type === 'image'}
+						<div class="relative" bind:this={blogContent[i]}>
+							<img
+								src={content.text}
+								alt={content.caption}
+								class="h-96 w-full rounded-lg object-cover shadow-md"
+							/>
+							<p class="mt-2 flex justify-center text-sm text-gray-500 italic dark:text-gray-300">
+								{content.caption}
+							</p>
+						</div>
+					{/if}
+				</div>
+			{/each}
 		</div>
 	</div>
 </article>
