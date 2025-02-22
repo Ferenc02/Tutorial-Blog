@@ -18,7 +18,8 @@
 	};
 </script>
 
-<aside class="flex w-32 justify-end">
+<aside class="flex w-32 items-center justify-end space-x-2">
+	<span class="text-xs text-gray-500">&copy; 2025</span>
 	<button
 		class={`flex h-8 w-16 cursor-pointer items-center rounded-full border p-1  transition-colors ${isDark ? 'border-neutral-700 bg-neutral-700 ' : 'border-gray-200 bg-slate-100 '}`}
 		onclick={toggleTheme}

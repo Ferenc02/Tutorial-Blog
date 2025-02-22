@@ -1,13 +1,13 @@
 <script>
 	import { page } from '$app/stores';
 
-	export let title = 'Home | Ferenc02';
+	export let title = 'Home | CodeJournal';
 	export let description = 'Description of your website.';
-	export let image = 'https://ferenc02.github.io/favicon.png';
+	export let image = 'https://codejournal-dev.vercel.app/favicon.png';
 </script>
 
 <svelte:head>
-	<title>{title} | Ferenc02</title>
+	<title>{title} | CodeJournal</title>
 	<meta name="description" content={description} />
 	<meta property="og_site_name" content="Ferenc02.github.io" />
 	<meta property="og:url" content="https://ferenc02.github.io/" />

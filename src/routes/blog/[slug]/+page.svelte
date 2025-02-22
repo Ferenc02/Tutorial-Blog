@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fade } from 'svelte/transition';
 	import { page } from '$app/state';
 
 	import { blogs } from '$lib/blogs.json';
@@ -97,7 +98,7 @@
 	};
 </script>
 
-<article class="mx-auto my-8 flex w-3/4 flex-col gap-4 lg:w-1/2">
+<article class="mx-auto my-8 flex w-3/4 flex-col gap-4 lg:w-1/2" in:fade={{ duration: 250 }}>
 	{#if isAdmin}
 		<div class="flex justify-end gap-4">
 			<a

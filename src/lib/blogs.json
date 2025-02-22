@@ -24,11 +24,20 @@
       "content": [
         {
           "type": "text",
-          "text": "This is a new blog post.dsdad"
+          "text": "This is a new blog post."
+        },
+        {
+          "type": "image",
+          "text": "",
+          "caption": ""
+        },
+        {
+          "type": "text",
+          "text": "dsadasdasdasd"
         },
         {
           "type": "code",
-          "text": "<p>Hello World</p>"
+          "text": "<p class=\"\">\n\n<code>\nalert(\"\");\n</code>"
         }
       ]
     }

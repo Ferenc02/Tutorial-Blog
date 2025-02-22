@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fade } from 'svelte/transition';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 
@@ -115,7 +116,7 @@
 	};
 </script>
 
-<article class="mx-auto my-8 flex w-full flex-col gap-4 px-8">
+<article class="mx-auto my-8 flex w-full flex-col gap-4 px-8" in:fade={{ duration: 250 }}>
 	<div class="buttons flex justify-end gap-2">
 		<button
 			onclick={async () => await saveBlog()}
