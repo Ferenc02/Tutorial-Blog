@@ -4,6 +4,12 @@
 
 	import { blogs } from '$lib/blogs.json';
 
+	import 'highlight.js/styles/atom-one-dark.css'; // Import a theme
+	import Highlight from 'svelte-highlight';
+	import typescript from 'svelte-highlight/languages/typescript';
+
+	import xml from 'svelte-highlight/languages/xml';
+
 	let allowedTags = [
 		'b',
 		'strong',
@@ -61,6 +67,8 @@
 		for (let i = 0; i < updatedBlog.content.length; i++) {
 			blogContent[i].innerHTML = '';
 			let contentToSanitize = '';
+
+			let sanitize = true;
 			if (updatedBlog.content[i].type === 'image') {
 				contentToSanitize = `
 				<div class="relative">
@@ -70,6 +78,9 @@
 				`;
 			} else if (updatedBlog.content[i].type === 'text') {
 				contentToSanitize = `<p>${updatedBlog.content[i].text}</p>`;
+			} else if (updatedBlog.content[i].type === 'code') {
+				sanitize = false;
+				contentToSanitize = updatedBlog.content[i].text;
 			}
 
 			let sanitizedContent = DOMPurify.sanitize(contentToSanitize, {
@@ -77,6 +88,9 @@
 				ALLOWED_ATTR: allowedAttributes
 			});
 
+			if (!sanitize) {
+				sanitizedContent = contentToSanitize;
+			}
 			blogContent[i].innerHTML += sanitizedContent;
 		}
 	};
@@ -176,6 +190,12 @@
 								/>
 							</span>
 						</div>
+					{:else if content.type === 'code'}
+						<textarea
+							bind:value={updatedBlog.content[i].text}
+							oninput={updateContent}
+							class="h-48 w-full rounded-lg border-2 border-gray-300 p-2 text-lg text-gray-700 dark:text-gray-300"
+						></textarea>
 					{/if}
 					<hr class="border-gray-300 dark:border-gray-700" />
 				{/each}
@@ -246,6 +266,8 @@
 								{content.caption}
 							</p>
 						</div>
+					{:else if content.type === 'code'}
+						<Highlight language={xml} code={content.text} />
 					{/if}
 				</div>
 			{/each}

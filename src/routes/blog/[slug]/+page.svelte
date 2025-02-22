@@ -6,6 +6,11 @@
 	import { onMount } from 'svelte';
 	import DOMPurify from 'dompurify';
 
+	import 'highlight.js/styles/atom-one-dark.css'; // Import a theme
+	import Highlight from 'svelte-highlight';
+	import typescript from 'svelte-highlight/languages/typescript';
+	import xml from 'svelte-highlight/languages/xml';
+
 	let allowedTags = [
 		'b',
 		'strong',
@@ -35,24 +40,28 @@
 
 	let isAdmin = props.data.isAdmin;
 
-	let blogContent: HTMLElement;
+	let blogContent: HTMLElement[] = [];
 
 	onMount(async () => {
 		if (!blogsName.includes(page.params.slug)) {
 			location.pathname = '/blog';
 		}
 
-		blog.content.forEach((content: any) => {
+		for (let i = 0; i < blog.content.length; i++) {
 			let contentToSanitize = '';
-			if (content.type === 'image') {
+
+			let sanitize = true;
+			if (blog.content[i].type === 'image') {
 				contentToSanitize = `
-				<div class="relative">
-				<img src="${content.text}" alt="${content.caption}" class="w-full rounded-lg object-cover shadow-md" />
-				<p class="mt-2 flex justify-center text-gray-500 italic dark:text-gray-300 text-sm">${content.caption}</p>
-				</div>
+				<img src="${blog.content[i].text}" alt="${blog.content[i].caption}" class="w-full rounded-lg object-cover shadow-md" />
+				<p class="mt-2 flex justify-center text-gray-500 italic dark:text-gray-300 text-sm">${blog.content[i].caption}</p>
+	
 				`;
-			} else if (content.type === 'text') {
-				contentToSanitize = `<p>${content.text}</p>`;
+			} else if (blog.content[i].type === 'text') {
+				contentToSanitize = `${blog.content[i].text}`;
+			} else if (blog.content[i].type === 'code') {
+				sanitize = false;
+				contentToSanitize = '';
 			}
 
 			let sanitizedContent = DOMPurify.sanitize(contentToSanitize, {
@@ -60,8 +69,12 @@
 				ALLOWED_ATTR: allowedAttributes
 			});
 
-			blogContent.innerHTML += sanitizedContent;
-		});
+			if (!sanitize) {
+				sanitizedContent = contentToSanitize;
+			}
+
+			blogContent[i].innerHTML += sanitizedContent;
+		}
 	});
 
 	let deleteBlog = async () => {
@@ -117,8 +130,22 @@
 		</p>
 	</div>
 
-	<div
-		class="flex flex-col gap-4 text-left text-lg text-gray-700 dark:text-gray-300"
-		bind:this={blogContent}
-	></div>
+	<div class="flex flex-col gap-4 text-left text-lg text-gray-700 dark:text-gray-300">
+		{#each blog.content as content, i}
+			<div class="flex flex-col gap-4">
+				{#if content.type === 'text'}
+					<p
+						class="text-left text-lg text-gray-700 dark:text-gray-300"
+						bind:this={blogContent[i]}
+					></p>
+				{:else if content.type === 'image'}
+					<div class="relative" bind:this={blogContent[i]}></div>
+				{:else if content.type === 'code'}
+					<div class="code-container" bind:this={blogContent[i]}>
+						<Highlight language={xml} code={content.text} />
+					</div>
+				{/if}
+			</div>
+		{/each}
+	</div>
 </article>

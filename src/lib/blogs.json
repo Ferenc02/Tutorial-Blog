@@ -25,6 +25,10 @@
         {
           "type": "text",
           "text": "This is a new blog post.dsdad"
+        },
+        {
+          "type": "code",
+          "text": "<p>Hello World</p>"
         }
       ]
     }
