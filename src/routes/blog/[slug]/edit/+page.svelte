@@ -77,13 +77,13 @@
 
 	<div class="flex w-full flex-col gap-8 lg:flex-row">
 		<div class="edit-container w-full lg:w-1/2">
-			<h1 class="text-center text-3xl font-bold">
+			<span class="text-center text-3xl font-bold">
 				<input
 					type="text"
 					bind:value={updatedBlog.title}
 					class="w-full rounded-lg border-2 border-gray-300 p-2 text-center text-3xl font-bold"
 				/>
-			</h1>
+			</span>
 			<span class="flex justify-center text-gray-500 dark:text-gray-300">
 				<input
 					type="text"
