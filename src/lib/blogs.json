@@ -24,7 +24,7 @@
       "content": [
         {
           "type": "text",
-          "text": "This is a new blog post."
+          "text": "This is a new <b>blog </b> post.dsdsdsds\n<br>\n\n\n\n<i>Italic text</i>"
         },
         {
           "type": "image",
@@ -33,7 +33,7 @@
         },
         {
           "type": "text",
-          "text": "dsadasdasdasd"
+          "text": "dsadasdasdasd\n\n<a href=\"\" class=\"link\" target=\"_blank\">Google</a>"
         },
         {
           "type": "code",

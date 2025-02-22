@@ -27,9 +27,10 @@
 		'h1',
 		'h2',
 		'h3',
+		'h4',
 		'div'
 	];
-	let allowedAttributes = ['href', 'title', 'src', 'alt', 'class', 'style'];
+	let allowedAttributes = ['href', 'title', 'src', 'alt', 'class', 'style', 'id', 'target'];
 
 	let blogsName = blogs.map((blog) => blog.title);
 

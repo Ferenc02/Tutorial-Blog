@@ -26,7 +26,7 @@
 			class="h-48 w-full rounded-lg object-cover shadow-md"
 		/>
 		<span
-			class="absolute top-0 right-0 rounded-bl-lg bg-white p-2 text-black dark:bg-neutral-700 dark:text-white"
+			class="absolute top-0 right-0 rounded-bl-lg bg-gray-200 p-2 text-black dark:bg-neutral-600 dark:text-white"
 		>
 			{data.category}
 		</span>

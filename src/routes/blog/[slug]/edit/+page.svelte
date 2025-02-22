@@ -26,9 +26,10 @@
 		'h1',
 		'h2',
 		'h3',
+		'h4',
 		'div'
 	];
-	let allowedAttributes = ['href', 'title', 'src', 'alt', 'class', 'style'];
+	let allowedAttributes = ['href', 'title', 'src', 'alt', 'class', 'style', 'id', 'target'];
 
 	import DOMPurify from 'dompurify';
 
@@ -54,15 +55,60 @@
 	}
 
 	onMount(async () => {
-		updateContent();
-
-		document.addEventListener('keydown', (e) => {
+		document.addEventListener('keydown', (e: KeyboardEvent) => {
+			const target = e.target as HTMLTextAreaElement | HTMLInputElement;
 			if (e.ctrlKey && e.key === 's') {
 				e.preventDefault();
 				saveBlog();
 			}
+
+			if (e.ctrlKey && e.key === 'k') {
+				e.preventDefault();
+				insertAtCursor(target, '<a href="" class="link" target="_blank"></a>');
+			}
+			if (e.ctrlKey && e.key === 'b') {
+				e.preventDefault();
+				insertAtCursor(target, '<b></b>');
+			}
+			if (e.ctrlKey && e.key === 'i') {
+				e.preventDefault();
+				insertAtCursor(target, '<i></i>');
+			}
+			if (e.ctrlKey && e.key === 'Enter') {
+				e.preventDefault();
+				insertAtCursor(target, '<br>');
+			}
 		});
+
+		updateContent();
 	});
+
+	const insertAtCursor = (input: HTMLTextAreaElement | HTMLInputElement, text: string) => {
+		const start = input.selectionStart || 0;
+		const end = input.selectionEnd || 0;
+		let currentValue = input.value;
+		let selectedText = currentValue.substring(start, end) || '';
+
+		// Handle wrapping text if something is selected
+		if (selectedText) {
+			if (text.includes('<a href="" class="link" target="_blank"></a>')) {
+				text = `<a href="${selectedText}" class="link" target="_blank">${selectedText}</a>`;
+			} else if (text.includes('<b></b>')) {
+				text = `<b>${selectedText}</b>`;
+			} else if (text.includes('<i></i>')) {
+				text = `<i>${selectedText}</i>`;
+			}
+		}
+
+		// Insert the text at the cursor position
+		const before = currentValue.substring(0, start);
+		const after = currentValue.substring(end);
+		input.value = before + text + after;
+
+		// Move the cursor to the correct position
+		const newPosition = start + text.length;
+		input.setSelectionRange(newPosition, newPosition);
+	};
 
 	const updateContent = () => {
 		for (let i = 0; i < updatedBlog.content.length; i++) {
