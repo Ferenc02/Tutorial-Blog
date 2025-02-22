@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+
 	import { blogs } from '$lib/blogs.json';
 
 	import { onMount } from 'svelte';
@@ -8,15 +9,35 @@
 
 	let blog = blogs.find((blog) => blog.title === page.params.slug)!;
 
+	// let { isAdmin } = $props();
+
+	let props = $props();
+
+	let isAdmin = props.data.isAdmin;
+
+	let content: HTMLElement;
+
 	onMount(async () => {
-		console.log();
 		if (!blogsName.includes(page.params.slug)) {
 			location.pathname = '/blog';
 		}
+
+		let newText = blog.content.replace(/\\n/g, '<br>');
+
+		// Not the best way to do this since this will make the content vulnerable to XSS attacks
+		content.innerHTML = newText;
 	});
 </script>
 
 <article class="mx-auto my-8 flex w-3/4 flex-col gap-4 lg:w-1/2">
+	{#if isAdmin}
+		<a
+			href={`/blog/${blog.title}/edit`}
+			class="flex w-32 cursor-pointer justify-center self-end rounded-full bg-blue-600 px-6 py-3 font-semibold text-white shadow-md transition-colors hover:bg-blue-800"
+			>Edit</a
+		>
+	{/if}
+
 	<h1 class="text-center text-3xl font-bold">{blog.title}</h1>
 	<span class="flex justify-center text-gray-500 dark:text-gray-300">{blog.date}</span>
 	<div class="relative">
@@ -34,5 +55,7 @@
 		>
 	</div>
 
-	<p class="text-left text-lg text-gray-700 dark:text-gray-300">{blog.content}</p>
+	<p class="text-left text-lg text-gray-700 dark:text-gray-300" bind:this={content}>
+		{blog.content}
+	</p>
 </article>

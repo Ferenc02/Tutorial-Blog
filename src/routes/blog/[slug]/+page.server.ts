@@ -9,10 +9,9 @@ export async function load({ cookies }) {
 		throw redirect(303, '/login');
 	}
 
+	const isAdmin = token === env.ADMIN_TOKEN;
+
 	return {
-		status: 200,
-		headers: {
-			'Cache-Control': 'no-store'
-		}
+		isAdmin
 	};
 }
