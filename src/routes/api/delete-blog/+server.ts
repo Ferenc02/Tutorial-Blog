@@ -4,7 +4,6 @@ import fs from 'fs';
 import path from 'path';
 import { blogs } from '$lib/blogs.json';
 import { env } from '$env/dynamic/private';
-
 const blogsPath = path.resolve('src/lib/blogs.json');
 
 export async function POST({ request, cookies }) {
@@ -14,15 +13,16 @@ export async function POST({ request, cookies }) {
 	if (!token || token !== env.ADMIN_TOKEN) {
 		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
 	}
+
 	const { title, updatedBlog } = await request.json();
 
 	// Read the existing blogs
 	const blogs = JSON.parse(fs.readFileSync(blogsPath, 'utf-8')).blogs;
 
-	// Find the blog and update it
+	// Find the blog and delete it
 	const blogIndex = blogs.findIndex((blog: any) => blog.title === title);
 	if (blogIndex !== -1) {
-		blogs[blogIndex] = { ...blogs[blogIndex], ...updatedBlog };
+		blogs.splice(blogIndex, 1);
 	} else {
 		return json({ success: false, message: 'Blog not found.' }, { status: 404 });
 	}
@@ -30,5 +30,5 @@ export async function POST({ request, cookies }) {
 	// Write the updated blogs back to the file
 	fs.writeFileSync(blogsPath, JSON.stringify({ blogs }, null, 2));
 
-	return json({ success: true, message: 'Blog updated successfully.' });
+	return json({ success: true, message: 'Blog Deleted successfully.' });
 }

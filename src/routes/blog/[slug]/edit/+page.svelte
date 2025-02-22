@@ -112,7 +112,7 @@
 				class="h-48 w-full rounded-lg border-2 border-gray-300 p-2 text-left text-lg text-gray-700 dark:text-gray-300"
 			></textarea>
 		</div>
-		<div class="preview-container w-1/2">
+		<div class="preview-container flex w-1/2 flex-col gap-4">
 			<h1 class="text-center text-3xl font-bold">{updatedBlog.title}</h1>
 			<span class="flex justify-center text-gray-500 dark:text-gray-300">{updatedBlog.date}</span>
 			<div class="relative">
