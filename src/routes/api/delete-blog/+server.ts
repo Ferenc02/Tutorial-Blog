@@ -1,10 +1,12 @@
 // src/routes/api/update-blog/+server.ts
-import { json } from '@sveltejs/kit';
+
 import fs from 'fs';
 import path from 'path';
-import { blogs } from '$lib/blogs.json';
+
 import { env } from '$env/dynamic/private';
-const blogsPath = path.resolve('src/lib/blogs.json');
+
+import { json } from '@sveltejs/kit';
+import { connectToDB } from '$lib/db.js';
 
 export async function POST({ request, cookies }) {
 	// Verify if the user is authenticated and has the 'admin' status
@@ -16,19 +18,19 @@ export async function POST({ request, cookies }) {
 
 	const { title, updatedBlog } = await request.json();
 
+	const db = await connectToDB();
+	const collection = await db.collection('blogs');
+
 	// Read the existing blogs
-	const blogs = JSON.parse(fs.readFileSync(blogsPath, 'utf-8')).blogs;
+	const blogs = await collection.find({}).toArray();
 
 	// Find the blog and delete it
 	const blogIndex = blogs.findIndex((blog: any) => blog.title === title);
-	if (blogIndex !== -1) {
-		blogs.splice(blogIndex, 1);
-	} else {
-		return json({ success: false, message: 'Blog not found.' }, { status: 404 });
+	if (blogIndex === -1) {
+		return json({ success: false, message: 'Blog not found' }, { status: 404 });
 	}
 
-	// Write the updated blogs back to the file
-	fs.writeFileSync(blogsPath, JSON.stringify({ blogs }, null, 2));
+	let result = await collection.deleteOne({ title });
 
 	return json({ success: true, message: 'Blog Deleted successfully.' });
 }

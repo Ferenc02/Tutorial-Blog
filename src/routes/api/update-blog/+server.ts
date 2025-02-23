@@ -1,11 +1,10 @@
-// src/routes/api/update-blog/+server.ts
 import { json } from '@sveltejs/kit';
-import fs from 'fs';
-import path from 'path';
-import { blogs } from '$lib/blogs.json';
+import { MongoClient } from 'mongodb';
 import { env } from '$env/dynamic/private';
+import { connectToDB } from '$lib/db';
 
-const blogsPath = path.resolve('src/lib/blogs.json');
+const uri = env.MONGO_URI;
+const client = new MongoClient(uri);
 
 export async function POST({ request, cookies }) {
 	// Verify if the user is authenticated and has the 'admin' status
@@ -14,21 +13,24 @@ export async function POST({ request, cookies }) {
 	if (!token || token !== env.ADMIN_TOKEN) {
 		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
 	}
+
 	const { title, updatedBlog } = await request.json();
 
-	// Read the existing blogs
-	const blogs = JSON.parse(fs.readFileSync(blogsPath, 'utf-8')).blogs;
+	const db = await connectToDB();
+	const collection = await db.collection('blogs');
 
-	// Find the blog and update it
-	const blogIndex = blogs.findIndex((blog: any) => blog.title === title);
-	if (blogIndex !== -1) {
-		blogs[blogIndex] = { ...blogs[blogIndex], ...updatedBlog };
-	} else {
-		return json({ success: false, message: 'Blog not found.' }, { status: 404 });
+	// Find the blog document using the title
+	const blog = await collection.findOne({ title });
+
+	if (!blog) {
+		return json({ success: false, message: 'Blog not found' }, { status: 404 });
 	}
 
-	// Write the updated blogs back to the file
-	fs.writeFileSync(blogsPath, JSON.stringify({ blogs }, null, 2));
+	// Remove the _id field from updatedBlog before updating
+	const { _id, ...blogWithoutId } = updatedBlog;
 
-	return json({ success: true, message: 'Blog updated successfully.' });
+	// Update the blog
+	await client.db('blogsDB').collection('blogs').updateOne({ title }, { $set: blogWithoutId });
+
+	return json({ success: true, message: 'Blog updated successfully.', updatedBlog });
 }

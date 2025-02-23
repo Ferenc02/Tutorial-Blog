@@ -3,13 +3,12 @@
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 
-	import { blogs } from '$lib/blogs.json';
-
 	import 'highlight.js/styles/atom-one-dark.css'; // Import a theme
 	import Highlight from 'svelte-highlight';
 	import typescript from 'svelte-highlight/languages/typescript';
 
 	import xml from 'svelte-highlight/languages/xml';
+	import DOMPurify from 'dompurify';
 
 	let allowedTags = [
 		'b',
@@ -31,11 +30,13 @@
 	];
 	let allowedAttributes = ['href', 'title', 'src', 'alt', 'class', 'style', 'id', 'target'];
 
-	import DOMPurify from 'dompurify';
+	let props = $props();
 
-	let blog = blogs.find((blog) => blog.title === page.params.slug)!;
+	let blogs = props.data.blogs;
 
-	let updatedBlog: any = { ...blog };
+	let blog = blogs.find((blog: any) => blog.title === page.params.slug)!;
+
+	let updatedBlog: any = $state(blog);
 
 	let blogContent: HTMLElement[] = [];
 
@@ -48,6 +49,7 @@
 
 		const data = await res.json();
 		if (data.success) {
+			updatedBlog = { ...data.updatedBlog };
 			if (redirect) location.pathname = `/blog/${updatedBlog.title}`;
 		} else {
 			alert('Error saving blog');
@@ -112,6 +114,10 @@
 
 	const updateContent = () => {
 		for (let i = 0; i < updatedBlog.content.length; i++) {
+			if (!blogContent[i]) {
+				blogContent[i] = document.createElement('div'); // or any other appropriate tag
+			}
+
 			blogContent[i].innerHTML = '';
 			let contentToSanitize = '';
 
@@ -128,6 +134,8 @@
 			} else if (updatedBlog.content[i].type === 'code') {
 				sanitize = false;
 				contentToSanitize = updatedBlog.content[i].text;
+			} else {
+				alert('Invalid content type');
 			}
 
 			let sanitizedContent = DOMPurify.sanitize(contentToSanitize, {
@@ -149,7 +157,7 @@
 		updateContent();
 	};
 
-	const addContent = (type: 'text' | 'image' | 'code') => {
+	const addContent = async (type: 'text' | 'image' | 'code') => {
 		if (type === 'text') {
 			updatedBlog.content.push({ type: 'text', text: '' });
 		} else if (type === 'image') {
@@ -157,7 +165,8 @@
 		} else if (type === 'code') {
 			updatedBlog.content.push({ type: 'code', text: '' });
 		}
-		saveBlog(false);
+
+		await saveBlog(false);
 		updateContent();
 	};
 </script>

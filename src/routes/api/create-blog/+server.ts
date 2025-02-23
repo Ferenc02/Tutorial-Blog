@@ -2,9 +2,9 @@
 import { json } from '@sveltejs/kit';
 import fs from 'fs';
 import path from 'path';
-import { blogs } from '$lib/blogs.json';
+
 import { env } from '$env/dynamic/private';
-const blogsPath = path.resolve('src/lib/blogs.json');
+import { connectToDB, getBlogsLength } from '$lib/db.js';
 
 export async function POST({ request, cookies }) {
 	// Verify if the user is authenticated and has the 'admin' status
@@ -17,12 +17,11 @@ export async function POST({ request, cookies }) {
 	const { title, updatedBlog } = await request.json();
 
 	// Read the existing blogs
-	const blogs = JSON.parse(fs.readFileSync(blogsPath, 'utf-8')).blogs;
 
 	// Create a new blog
-	const newBlog = {
-		id: blogs.length + 1,
-		title: `New Blog ${blogs.length + 1}`,
+	let newBlog = {
+		id: 0,
+		title: `New Blog`,
 		date: '2025-01-01',
 		category: 'JavaScript',
 		image: 'https://picsum.photos/id/366/600/300',
@@ -35,10 +34,30 @@ export async function POST({ request, cookies }) {
 		]
 	};
 
-	blogs.push(newBlog);
-
-	// Write the updated blogs back to the file
-	fs.writeFileSync(blogsPath, JSON.stringify({ blogs }, null, 2));
+	newBlog = await createBlog(newBlog);
 
 	return json({ success: true, title: newBlog.title, message: 'Blog updated successfully.' });
+}
+
+async function createBlog(blogData: any) {
+	try {
+		const db = await connectToDB();
+		const collection = db.collection('blogs'); // Collection name
+
+		let date = new Date();
+		let month = date.getMonth() + 1;
+		let day = date.getDate();
+		let year = date.getFullYear();
+
+		blogData.id = (await getBlogsLength()) + 1;
+		blogData.date = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+		blogData.title = `Blog ${blogData.id}`;
+
+		// Insert a new blog document
+		const result = await collection.insertOne(blogData);
+
+		return blogData;
+	} catch (e) {
+		console.error('Error creating blog:', e);
+	}
 }
