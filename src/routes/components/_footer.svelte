@@ -4,7 +4,7 @@
 
 <footer class="flex w-full items-center justify-between self-end p-2 align-middle">
 	<div class="flex items-center justify-center space-x-4">
-		<a class="bmc-container" href="#0" target="_blank">
+		<a class="bmc-container" href="https://buymeacoffee.com/ferenc02" target="_blank">
 			<img src="/bmc-button.svg" alt="Buy me a coffee button" class="w-32" />
 		</a>
 	</div>
