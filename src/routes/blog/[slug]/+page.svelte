@@ -2,8 +2,6 @@
 	import { fade } from 'svelte/transition';
 	import { page } from '$app/state';
 
-	import { blogs } from '$lib/blogs.json';
-
 	import { onMount } from 'svelte';
 	import DOMPurify from 'dompurify';
 
@@ -12,6 +10,7 @@
 	import typescript from 'svelte-highlight/languages/typescript';
 	import xml from 'svelte-highlight/languages/xml';
 
+	let props = $props();
 	let allowedTags = [
 		'b',
 		'strong',
@@ -32,22 +31,18 @@
 	];
 	let allowedAttributes = ['href', 'title', 'src', 'alt', 'class', 'style', 'id', 'target'];
 
-	let blogsName = blogs.map((blog) => blog.title);
-
-	let blog = blogs.find((blog) => blog.title === page.params.slug)!;
+	let blog = props.data.blog;
 
 	// let { isAdmin } = $props();
-
-	let props = $props();
 
 	let isAdmin = props.data.isAdmin;
 
 	let blogContent: HTMLElement[] = [];
 
 	onMount(async () => {
-		if (!blogsName.includes(page.params.slug)) {
-			location.pathname = '/blog';
-		}
+		// if (!blogsName.includes(page.params.slug)) {
+		// 	location.pathname = '/blog';
+		// }
 
 		for (let i = 0; i < blog.content.length; i++) {
 			let contentToSanitize = '';

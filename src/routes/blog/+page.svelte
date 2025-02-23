@@ -2,11 +2,11 @@
 	import { fade } from 'svelte/transition';
 	import PostPreview from '../components/_postPreview.svelte';
 
-	import { blogs } from '$lib/blogs.json';
-
 	let props = $props();
 
 	let isAdmin = props.data.isAdmin;
+
+	let blogs = props.data.blogs;
 
 	const newPost = async () => {
 		const res = await fetch('/api/create-blog', {
@@ -38,7 +38,7 @@
 	<p class="text-center text-lg">No blog posts available</p>
 {/if}
 <section
-	class="content-center gap-6 px-6 py-8 lg:grid lg:grid-cols-3 lg:gap-8 lg:px-32"
+	class="flex flex-col content-center gap-6 px-6 py-8 lg:grid lg:grid-cols-3 lg:gap-8 lg:px-32"
 	in:fade={{ duration: 250 }}
 >
 	{#each blogs as blog}
