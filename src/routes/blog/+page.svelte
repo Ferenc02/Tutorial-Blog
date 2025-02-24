@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 	import PostPreview from '../components/_postPreview.svelte';
+	import Seo from '../components/_seo.svelte';
 
 	let props = $props();
 
@@ -23,6 +24,8 @@
 		}
 	};
 </script>
+
+<Seo title="Blog" description="Read the latest blog posts" />
 
 <h1 class="mb-8 text-center text-4xl font-extrabold">Here are the latest blog posts</h1>
 

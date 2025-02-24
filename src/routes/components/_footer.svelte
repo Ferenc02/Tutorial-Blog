@@ -2,7 +2,9 @@
 	import ThemeSwitcher from '../components/_theme_switcher.svelte';
 </script>
 
-<footer class="flex w-full items-center justify-between self-end p-2 align-middle">
+<footer
+	class="flex w-full flex-col items-center justify-between gap-4 self-end p-2 align-middle sm:flex-row sm:gap-0"
+>
 	<div class="flex items-center justify-center space-x-4">
 		<a class="bmc-container" href="https://buymeacoffee.com/ferenc02" target="_blank">
 			<img src="/bmc-button.svg" alt="Buy me a coffee button" class="w-32" />

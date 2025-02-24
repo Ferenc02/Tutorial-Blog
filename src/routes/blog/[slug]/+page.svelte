@@ -9,6 +9,7 @@
 	import Highlight from 'svelte-highlight';
 	import typescript from 'svelte-highlight/languages/typescript';
 	import xml from 'svelte-highlight/languages/xml';
+	import Seo from '../../components/_seo.svelte';
 
 	let props = $props();
 	let allowedTags = [
@@ -94,7 +95,9 @@
 	};
 </script>
 
-<article class="mx-auto my-8 flex w-3/4 flex-col gap-4 lg:w-1/2" in:fade={{ duration: 250 }}>
+<Seo title={blog.title} description={blog.description} image={blog.image} />
+
+<article class="mx-auto my-8 flex flex-col gap-4 p-4 lg:w-1/2" in:fade={{ duration: 250 }}>
 	{#if isAdmin}
 		<div class="flex justify-end gap-4">
 			<a
