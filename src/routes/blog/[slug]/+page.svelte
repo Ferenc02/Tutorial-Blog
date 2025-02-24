@@ -95,7 +95,7 @@
 	};
 </script>
 
-<Seo title={blog.title} description={blog.content[0]} image={blog.image} />
+<Seo title={blog.title} description={blog.content[0].text} image={blog.image} />
 
 <article class="mx-auto my-8 flex flex-col gap-4 p-4 lg:w-1/2" in:fade={{ duration: 250 }}>
 	{#if isAdmin}
